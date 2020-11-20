@@ -1,0 +1,13 @@
+image: golang:latest
+
+stages:
+  - build
+
+build:
+  stage: build
+  script:
+    - go build
+  artifacts:
+    paths:
+      - btrfs-r2f
+    expire_in: 1 week
