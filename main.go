@@ -77,6 +77,8 @@ func readCommand(reader io.Reader) bool {
 		return mkfileCommand(reader)
 	} else if commandType == BTRFS_SEND_C_RENAME {
 		return renameCommand(reader)
+	} else if commandType == BTRFS_SEND_C_WRITE {
+		return writeCommand(reader)
 	}
 
 	data := make([]byte, commandSize)
