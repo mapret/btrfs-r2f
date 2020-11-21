@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"io"
+	"os"
+	"path"
 )
 
-func renameCommand(reader io.Reader) bool {
+func renameCommand(reader io.Reader, config Config) bool {
 	// First BTRFS_SEND_A_PATH
 	tlvType, tlvLength := readTlvTypeAndLength(reader)
 	if tlvType != BTRFS_SEND_A_PATH {
@@ -19,6 +21,11 @@ func renameCommand(reader io.Reader) bool {
 		panic("Unexpected command")
 	}
 	newName := readString(reader, tlvLength)
+
+	err := os.Rename(path.Join(config.root, oldName), path.Join(config.root, newName))
+	if err != nil {
+		panic(err)
+	}
 
 	fmt.Printf("rename %s to %s\n", oldName, newName)
 	return true

@@ -11,16 +11,17 @@ const magicString = "btrfs-stream\000"
 
 func main() {
 	filename := os.Args[1]
+	config := readConfig()
 
 	fd, err := os.OpenFile(filename, os.O_RDONLY, 0)
 	if err != nil {
 		panic(err)
 	}
-	doStuff(fd)
+	doStuff(fd, config)
 	_ = fd.Close()
 }
 
-func doStuff(reader io.Reader) {
+func doStuff(reader io.Reader, config Config) {
 	buffer := make([]byte, 13)
 	_, err := io.ReadFull(reader, buffer)
 	if err != nil {
@@ -39,7 +40,7 @@ func doStuff(reader io.Reader) {
 		panic(fmt.Sprintf("Illegal send version, was %d but only %d is allowed", sendVersion, 1))
 	}
 
-	for readCommand(reader) {
+	for readCommand(reader, config) {
 	}
 }
 
@@ -51,7 +52,7 @@ func doStuff(reader io.Reader) {
 // ├─────┼·┤
 // └─────┴·┘
 
-func readCommand(reader io.Reader) bool {
+func readCommand(reader io.Reader, config Config) bool {
 	//                            Send command header
 	// ┌────────────────────────────┬──────────────┬────────────────────────────┐
 	// │       Command size         │ Command type │           CRC32            │
@@ -74,11 +75,11 @@ func readCommand(reader io.Reader) bool {
 	if commandType == BTRFS_SEND_C_END {
 		return false
 	} else if commandType == BTRFS_SEND_C_MKFILE {
-		return mkfileCommand(reader)
+		return mkfileCommand(reader, config)
 	} else if commandType == BTRFS_SEND_C_RENAME {
-		return renameCommand(reader)
+		return renameCommand(reader, config)
 	} else if commandType == BTRFS_SEND_C_WRITE {
-		return writeCommand(reader)
+		return writeCommand(reader, config)
 	}
 
 	data := make([]byte, commandSize)

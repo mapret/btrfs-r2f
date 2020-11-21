@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"io"
+	"os"
+	"path"
 )
 
-func mkfileCommand(reader io.Reader) bool {
+func mkfileCommand(reader io.Reader, config Config) bool {
 	// First BTRFS_SEND_A_PATH
 	tlvType, tlvLength := readTlvTypeAndLength(reader)
 	if tlvType != BTRFS_SEND_A_PATH {
@@ -20,6 +22,16 @@ func mkfileCommand(reader io.Reader) bool {
 	}
 	var inodeNumber uint64
 	readAndPanic(reader, &inodeNumber)
+
+	// Create empty file
+	emptyFile, err := os.Create(path.Join(config.root, filename))
+	if err != nil {
+		panic(err)
+	}
+	err = emptyFile.Close()
+	if err != nil {
+		panic(err)
+	}
 
 	fmt.Printf("mkfile %s (%d)\n", filename, inodeNumber)
 	return true
