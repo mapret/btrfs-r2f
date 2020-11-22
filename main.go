@@ -89,6 +89,10 @@ func readCommand(reader io.Reader, config Config) bool {
 		return unlinkCommand(reader, config)
 	} else if commandType == BTRFS_SEND_C_RMDIR {
 		return rmdirCommand(reader, config)
+	} else if commandType == BTRFS_SEND_C_SYMLINK {
+		return symlinkCommand(reader, config)
+	} else if commandType == BTRFS_SEND_C_LINK {
+		return linkCommand(reader, config)
 	}
 
 	data := make([]byte, commandSize)

@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path"
+	"runtime"
 )
 
 func renameCommand(reader io.Reader, config Config) bool {
@@ -23,7 +24,20 @@ func renameCommand(reader io.Reader, config Config) bool {
 	newName := readString(reader, tlvLength)
 
 	if !config.dryRun {
-		err := os.Rename(path.Join(config.root, oldName), path.Join(config.root, newName))
+		oldPath := path.Join(config.root, oldName)
+		newPath := path.Join(config.root, newName)
+
+		if runtime.GOOS == "windows" {
+			// Workaround for Windows: Shortcuts have the additional extension ".lnk", which is not shown in
+			// Windows Explorer and also not present in the btrfs-send command stream
+			_, err := os.Stat(oldPath)
+			if os.IsNotExist(err) {
+				oldPath += ".lnk"
+				newPath += ".lnk"
+			}
+		}
+
+		err := os.Rename(oldPath, newPath)
 		if err != nil {
 			panic(err)
 		}
