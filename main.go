@@ -85,6 +85,10 @@ func readCommand(reader io.Reader, config Config) bool {
 		return writeCommand(reader, config)
 	} else if commandType == BTRFS_SEND_C_MKDIR {
 		return mkdirCommand(reader, config)
+	} else if commandType == BTRFS_SEND_C_UNLINK {
+		return unlinkCommand(reader, config)
+	} else if commandType == BTRFS_SEND_C_RMDIR {
+		return rmdirCommand(reader, config)
 	}
 
 	data := make([]byte, commandSize)
