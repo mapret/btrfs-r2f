@@ -22,9 +22,11 @@ func renameCommand(reader io.Reader, config Config) bool {
 	}
 	newName := readString(reader, tlvLength)
 
-	err := os.Rename(path.Join(config.root, oldName), path.Join(config.root, newName))
-	if err != nil {
-		panic(err)
+	if !config.dryRun {
+		err := os.Rename(path.Join(config.root, oldName), path.Join(config.root, newName))
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	fmt.Printf("rename %s to %s\n", oldName, newName)

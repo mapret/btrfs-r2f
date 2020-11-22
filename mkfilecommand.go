@@ -23,14 +23,16 @@ func mkfileCommand(reader io.Reader, config Config) bool {
 	var inodeNumber uint64
 	readAndPanic(reader, &inodeNumber)
 
-	// Create empty file
-	emptyFile, err := os.Create(path.Join(config.root, filename))
-	if err != nil {
-		panic(err)
-	}
-	err = emptyFile.Close()
-	if err != nil {
-		panic(err)
+	if !config.dryRun {
+		// Create empty file
+		emptyFile, err := os.Create(path.Join(config.root, filename))
+		if err != nil {
+			panic(err)
+		}
+		err = emptyFile.Close()
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	fmt.Printf("mkfile %s (%d)\n", filename, inodeNumber)

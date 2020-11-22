@@ -80,6 +80,8 @@ func readCommand(reader io.Reader, config Config) bool {
 		return renameCommand(reader, config)
 	} else if commandType == BTRFS_SEND_C_WRITE {
 		return writeCommand(reader, config)
+	} else if commandType == BTRFS_SEND_C_MKDIR {
+		return mkdirCommand(reader, config)
 	}
 
 	data := make([]byte, commandSize)
