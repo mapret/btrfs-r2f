@@ -22,7 +22,7 @@ func mkdirCommand(reader io.Reader, config Config) bool {
 	readAndPanic(reader, &inodeNumber)
 
 	if !config.dryRun {
-		err := os.Mkdir(path.Join(config.root, directoryName), os.ModeDir)
+		err := os.Mkdir(path.Join(config.root, directoryName), 0700)
 		if err != nil {
 			panic(err)
 		}
