@@ -93,6 +93,8 @@ func readCommand(reader io.Reader, config Config) bool {
 		return symlinkCommand(reader, config)
 	} else if commandType == BTRFS_SEND_C_LINK {
 		return linkCommand(reader, config)
+	} else if commandType == BTRFS_SEND_C_TRUNCATE {
+		return truncateCommand(reader, config)
 	}
 
 	data := make([]byte, commandSize)
