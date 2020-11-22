@@ -10,15 +10,18 @@ import (
 const magicString = "btrfs-stream\000"
 
 func main() {
-	filename := os.Args[1]
 	config := readConfig()
 
-	fd, err := os.OpenFile(filename, os.O_RDONLY, 0)
-	if err != nil {
-		panic(err)
+	if isStdinPipeConnected() {
+		doStuff(os.Stdin, config)
+	} else {
+		fd, err := os.OpenFile(os.Args[1], os.O_RDONLY, 0)
+		if err != nil {
+			panic(err)
+		}
+		doStuff(fd, config)
+		_ = fd.Close()
 	}
-	doStuff(fd, config)
-	_ = fd.Close()
 }
 
 func doStuff(reader io.Reader, config Config) {

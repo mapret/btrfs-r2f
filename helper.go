@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/binary"
 	"io"
+	"os"
 )
 
 func readAndPanic(reader io.Reader, data interface{}) {
@@ -24,4 +25,9 @@ func readString(reader io.Reader, length uint16) string {
 	data := make([]byte, length)
 	readAndPanic(reader, data)
 	return string(data)
+}
+
+func isStdinPipeConnected() bool {
+	stat, _ := os.Stdin.Stat()
+	return stat.Mode()&os.ModeNamedPipe != 0
 }
