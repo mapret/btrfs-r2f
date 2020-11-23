@@ -27,7 +27,7 @@ func prepareTestFolder(t *testing.T) {
 		panic(err)
 	}
 
-	err = ioutil.WriteFile(path.Join(testFolder, "file1"), []byte(quickBrownFox), 700)
+	err = ioutil.WriteFile(path.Join(testFolder, "file1"), []byte(quickBrownFox), 0700)
 	if err != nil {
 		t.Fatal("Failed to create file1")
 	}
@@ -141,7 +141,7 @@ func TestSymlinkStream(t *testing.T) {
 			t.Fatal("file2 was not created")
 		}
 	} else {
-		stat, err := os.Stat(path.Join(testFolder, "file2"))
+		stat, err := os.Lstat(path.Join(testFolder, "file2"))
 		if os.IsNotExist(err) {
 			t.Fatal("file2 was not created")
 		}

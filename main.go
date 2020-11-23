@@ -66,8 +66,7 @@ func readCommand(reader io.Reader, config Config) bool {
 	readAndPanic(reader, &commandSize)
 	readAndPanic(reader, &commandType)
 	readAndPanic(reader, &crc32)
-
-	fmt.Printf("Command: %d\n", commandType)
+	//fmt.Printf("Command: %d\n", commandType)
 
 	//                    Send attribute header
 	// ┌──────────────┬──────────────┬───────··············───────┐

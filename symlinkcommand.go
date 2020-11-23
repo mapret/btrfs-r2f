@@ -52,7 +52,7 @@ func symlinkCommand(reader io.Reader, config Config) bool {
 				panic(err)
 			}
 		} else {
-			err := os.Symlink(path.Join(config.Root, linkTarget), path.Join(config.Root, linkName))
+			err := os.Symlink(linkTarget, path.Join(config.Root, linkName))
 			if err != nil {
 				panic(err)
 			}
