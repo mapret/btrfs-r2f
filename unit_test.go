@@ -9,20 +9,6 @@ import (
 
 /*const testFolder = "TestFilesystemRoot"
 
-func cleanTestFolder() {
-	_, err := os.Stat(testFolder)
-	if !os.IsNotExist(err) {
-		err = os.RemoveAll(testFolder)
-		if err != nil {
-			panic(err)
-		}
-	}
-	err = os.Mkdir(testFolder, 0700)
-	if err != nil {
-		panic(err)
-	}
-}
-
 func TestMain(m *testing.M) {
 	cleanTestFolder()
 	code := m.Run()
@@ -40,10 +26,10 @@ func testCommandAndExpectStdout(t *testing.T, command func(io.Reader, Config) bo
 
 	returnValue := command(dataReader, config)
 	if !returnValue {
-		t.Errorf("Command returned false")
+		t.Fatalf("Command returned false")
 	}
 	if dataReader.Len() != 0 {
-		t.Errorf("Data stream not empty")
+		t.Fatalf("Data stream not empty")
 	}
 	stdoutValue := stdout.String()
 	if expectedResult != stdoutValue {
@@ -51,7 +37,7 @@ func testCommandAndExpectStdout(t *testing.T, command func(io.Reader, Config) bo
 		if strings.HasSuffix(expectedResult, "\n") && strings.HasSuffix(stdoutValue, "\n") {
 			extraNewline = ""
 		}
-		t.Errorf("command stdout mismatch: expected\n\t%s%sbut was\n\t%s%s", expectedResult, extraNewline, stdoutValue, extraNewline)
+		t.Fatalf("command stdout mismatch: expected\n\t%s%sbut was\n\t%s%s", expectedResult, extraNewline, stdoutValue, extraNewline)
 	}
 }
 
