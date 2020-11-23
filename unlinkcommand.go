@@ -14,13 +14,16 @@ func unlinkCommand(reader io.Reader, config Config) bool {
 	}
 	filename := readString(reader, tlvLength)
 
-	if !config.dryRun {
-		err := os.Remove(path.Join(config.root, filename))
+	if !config.DryRun {
+		err := os.Remove(path.Join(config.Root, filename))
 		if err != nil {
 			panic(err)
 		}
 	}
 
-	fmt.Printf("unlink %s\n", filename)
+	if config.Verbose {
+		_, err := fmt.Fprintf(config.Stdout, "unlink %s\n", filename)
+		return err == nil
+	}
 	return true
 }

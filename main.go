@@ -13,18 +13,18 @@ func main() {
 	config := readConfig()
 
 	if isStdinPipeConnected() {
-		doStuff(os.Stdin, config)
+		ExecuteProgram(os.Stdin, config)
 	} else {
 		fd, err := os.OpenFile(os.Args[1], os.O_RDONLY, 0)
 		if err != nil {
 			panic(err)
 		}
-		doStuff(fd, config)
+		ExecuteProgram(fd, config)
 		_ = fd.Close()
 	}
 }
 
-func doStuff(reader io.Reader, config Config) {
+func ExecuteProgram(reader io.Reader, config Config) {
 	buffer := make([]byte, 13)
 	_, err := io.ReadFull(reader, buffer)
 	if err != nil {

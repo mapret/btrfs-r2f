@@ -14,13 +14,16 @@ func rmdirCommand(reader io.Reader, config Config) bool {
 	}
 	directoryName := readString(reader, tlvLength)
 
-	if !config.dryRun {
-		err := os.Remove(path.Join(config.root, directoryName))
+	if !config.DryRun {
+		err := os.Remove(path.Join(config.Root, directoryName))
 		if err != nil {
 			panic(err)
 		}
 	}
 
-	fmt.Printf("rmdir %s\n", directoryName)
+	if config.Verbose {
+		_, err := fmt.Fprintf(config.Stdout, "rmdir %s\n", directoryName)
+		return err == nil
+	}
 	return true
 }

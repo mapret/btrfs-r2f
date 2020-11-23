@@ -21,13 +21,16 @@ func truncateCommand(reader io.Reader, config Config) bool {
 	var size int64
 	readAndPanic(reader, &size)
 
-	if !config.dryRun {
-		err := os.Truncate(path.Join(config.root, filename), size)
+	if !config.DryRun {
+		err := os.Truncate(path.Join(config.Root, filename), size)
 		if err != nil {
 			panic(err)
 		}
 	}
 
-	fmt.Printf("truncate %s to %d bytes\n", filename, size)
+	if config.Verbose {
+		_, err := fmt.Fprintf(config.Stdout, "truncate %s to %d bytes\n", filename, size)
+		return err == nil
+	}
 	return true
 }

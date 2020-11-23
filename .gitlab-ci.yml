@@ -1,13 +1,18 @@
 image: golang:latest
 
 stages:
-  - build
+  - build_and_unit_test
 
 build:
-  stage: build
+  stage: build_and_unit_test
   script:
     - go build
   artifacts:
     paths:
       - btrfs-r2f
     expire_in: 1 week
+
+unit_test:
+  stage: build_and_unit_test
+  script:
+   - go test

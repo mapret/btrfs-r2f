@@ -23,9 +23,9 @@ func mkfileCommand(reader io.Reader, config Config) bool {
 	var inodeNumber uint64
 	readAndPanic(reader, &inodeNumber)
 
-	if !config.dryRun {
+	if !config.DryRun {
 		// Create empty file
-		emptyFile, err := os.Create(path.Join(config.root, filename))
+		emptyFile, err := os.Create(path.Join(config.Root, filename))
 		if err != nil {
 			panic(err)
 		}
@@ -35,6 +35,9 @@ func mkfileCommand(reader io.Reader, config Config) bool {
 		}
 	}
 
-	fmt.Printf("mkfile %s (%d)\n", filename, inodeNumber)
+	if config.Verbose {
+		_, err := fmt.Fprintf(config.Stdout, "mkfile %s (%d)\n", filename, inodeNumber)
+		return err == nil
+	}
 	return true
 }

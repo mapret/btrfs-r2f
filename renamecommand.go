@@ -23,9 +23,9 @@ func renameCommand(reader io.Reader, config Config) bool {
 	}
 	newName := readString(reader, tlvLength)
 
-	if !config.dryRun {
-		oldPath := path.Join(config.root, oldName)
-		newPath := path.Join(config.root, newName)
+	if !config.DryRun {
+		oldPath := path.Join(config.Root, oldName)
+		newPath := path.Join(config.Root, newName)
 
 		if runtime.GOOS == "windows" {
 			// Workaround for Windows: Shortcuts have the additional extension ".lnk", which is not shown in
@@ -43,6 +43,9 @@ func renameCommand(reader io.Reader, config Config) bool {
 		}
 	}
 
-	fmt.Printf("rename %s to %s\n", oldName, newName)
+	if config.Verbose {
+		_, err := fmt.Fprintf(config.Stdout, "rename %s to %s\n", oldName, newName)
+		return err == nil
+	}
 	return true
 }

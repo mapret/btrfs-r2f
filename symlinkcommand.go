@@ -31,14 +31,14 @@ func symlinkCommand(reader io.Reader, config Config) bool {
 	}
 	linkTarget := readString(reader, tlvLength)
 
-	if !config.dryRun {
+	if !config.DryRun {
 		if runtime.GOOS == "windows" {
 			// Workaround for Windows: Create shortcut (via powershell), since administrator privileges are required
 			// to creating a symlink
 			command := exec.Command("powershell")
-			command.Dir = config.root
+			command.Dir = config.Root
 
-			absoluteTargetPath, _ := filepath.Abs(path.Join(config.root, linkTarget))
+			absoluteTargetPath, _ := filepath.Abs(path.Join(config.Root, linkTarget))
 			buffer := bytes.Buffer{}
 			buffer.WriteString("$WshShell = New-Object -comObject WScript.Shell\n")
 			buffer.WriteString(fmt.Sprintf("$Shortcut = $WshShell.CreateShortcut('%s.lnk')\n", linkName))
@@ -52,13 +52,16 @@ func symlinkCommand(reader io.Reader, config Config) bool {
 				panic(err)
 			}
 		} else {
-			err := os.Symlink(path.Join(config.root, linkTarget), path.Join(config.root, linkName))
+			err := os.Symlink(path.Join(config.Root, linkTarget), path.Join(config.Root, linkName))
 			if err != nil {
 				panic(err)
 			}
 		}
 	}
 
-	fmt.Printf("symlink %s to %s (%d)\n", linkName, linkTarget, inodeNumber)
+	if config.Verbose {
+		_, err := fmt.Fprintf(config.Stdout, "symlink %s to %s (%d)\n", linkName, linkTarget, inodeNumber)
+		return err == nil
+	}
 	return true
 }

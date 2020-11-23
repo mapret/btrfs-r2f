@@ -28,9 +28,9 @@ func writeCommand(reader io.Reader, config Config) bool {
 	data := make([]byte, tlvLength)
 	readAndPanic(reader, data)
 
-	if !config.dryRun {
+	if !config.DryRun {
 		// Write data at offset to file
-		fd, err := os.OpenFile(path.Join(config.root, filename), os.O_WRONLY, 0)
+		fd, err := os.OpenFile(path.Join(config.Root, filename), os.O_WRONLY, 0)
 		if err != nil {
 			panic(err)
 		}
@@ -44,6 +44,9 @@ func writeCommand(reader io.Reader, config Config) bool {
 		}
 	}
 
-	fmt.Printf("write %s (offset %d, datalen %d)\n", filename, fileOffset, len(data))
+	if config.Verbose {
+		_, err := fmt.Fprintf(config.Stdout, "write %s (offset %d, datalen %d)\n", filename, fileOffset, len(data))
+		return err == nil
+	}
 	return true
 }

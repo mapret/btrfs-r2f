@@ -21,13 +21,16 @@ func mkdirCommand(reader io.Reader, config Config) bool {
 	var inodeNumber uint64
 	readAndPanic(reader, &inodeNumber)
 
-	if !config.dryRun {
-		err := os.Mkdir(path.Join(config.root, directoryName), 0700)
+	if !config.DryRun {
+		err := os.Mkdir(path.Join(config.Root, directoryName), 0700)
 		if err != nil {
 			panic(err)
 		}
 	}
 
-	fmt.Printf("mkdir %s (%d)\n", directoryName, inodeNumber)
+	if config.Verbose {
+		_, err := fmt.Fprintf(config.Stdout, "mkdir %s (%d)\n", directoryName, inodeNumber)
+		return err == nil
+	}
 	return true
 }

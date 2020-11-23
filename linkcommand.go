@@ -20,13 +20,16 @@ func linkCommand(reader io.Reader, config Config) bool {
 	}
 	linkTarget := readString(reader, tlvLength)
 
-	if !config.dryRun {
-		err := os.Link(path.Join(config.root, linkTarget), path.Join(config.root, linkName))
+	if !config.DryRun {
+		err := os.Link(path.Join(config.Root, linkTarget), path.Join(config.Root, linkName))
 		if err != nil {
 			panic(err)
 		}
 	}
 
-	fmt.Printf("link %s to %s\n", linkName, linkTarget)
+	if config.Verbose {
+		_, err := fmt.Fprintf(config.Stdout, "link %s to %s\n", linkName, linkTarget)
+		return err == nil
+	}
 	return true
 }

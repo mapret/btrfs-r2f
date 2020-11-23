@@ -1,14 +1,23 @@
 package main
 
+import (
+	"io"
+	"os"
+)
+
 type Config struct {
-	root   string
-	dryRun bool
+	Root    string
+	DryRun  bool
+	Verbose bool
+	Stdout  io.Writer
 }
 
 func readConfig() Config {
 	config := Config{
-		root:   "fs",
-		dryRun: false,
+		Root:    "fs",
+		DryRun:  false,
+		Verbose: true,
+		Stdout:  os.Stdout,
 	}
 	return config
 }
