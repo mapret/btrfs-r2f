@@ -1,3 +1,10 @@
+.shared_windows_runners:
+  tags:
+  - shared-windows
+  - windows
+  - windows-1809
+
+
 image: golang:latest
 
 stages:
@@ -13,6 +20,14 @@ build:
     expire_in: 1 week
 
 unit_test:
+  stage: build_and_unit_test
+  script:
+   - go test
+
+unit_test_windows:
+  extends:
+   - .shared_windows_runners
+  image: winamd64/golang:latest
   stage: build_and_unit_test
   script:
    - go test
