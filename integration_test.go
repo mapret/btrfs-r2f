@@ -210,6 +210,9 @@ func simpleResolveLnkFile(pathToCheck string) string {
 	data, _ := ioutil.ReadFile(pathToCheck)
 	s := string(data)
 	start := strings.Index(s, "Data2\x00") + 6
+	if start == 5 { // TODO: This reeeeeeeaaally needs to change
+		start = strings.Index(s, "\x00\x43\x3a") + 1
+	}
 	end := strings.Index(s[start:], "\x00") + start
 	pathToCheck = s[start:end]
 
@@ -239,6 +242,7 @@ func compareHashes(t *testing.T, hashSource string) {
 	hashesActual := strings.Join(hashlist, "\n") + "\n"
 	hashesExpectationBytes, _ := ioutil.ReadFile(hashSource)
 	hashesExpectation := string(hashesExpectationBytes)
+	hashesExpectation = strings.ReplaceAll(hashesExpectation, "\r", "") // Git in Windows Docker image inserts \r
 	if hashesActual != hashesExpectation {
 		t.Fatalf("Hash mismatch: Expected\n%s  but was\n%s", hashesExpectation, hashesActual)
 	}
