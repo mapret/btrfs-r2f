@@ -2,11 +2,15 @@ package main
 
 import (
 	"bytes"
+	"crypto/md5"
 	"encoding/binary"
+	"encoding/hex"
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 	"runtime"
+	"sort"
 	"strings"
 	"testing"
 )
@@ -15,6 +19,10 @@ const testFolder = "test_filesystem_root"
 const quickBrownFox = "The quick brown fox jumps over the lazy dog.\n"
 
 func prepareTestFolder(t *testing.T) {
+	prepareTestFolder2(t, false)
+}
+
+func prepareTestFolder2(t *testing.T, emptyDirectory bool) {
 	_, err := os.Stat(testFolder)
 	if !os.IsNotExist(err) {
 		err = os.RemoveAll(testFolder)
@@ -27,13 +35,15 @@ func prepareTestFolder(t *testing.T) {
 		panic(err)
 	}
 
-	err = ioutil.WriteFile(path.Join(testFolder, "file1"), []byte(quickBrownFox), 0700)
-	if err != nil {
-		t.Fatal("Failed to create file1")
-	}
-	err = os.Mkdir(path.Join(testFolder, "dir1"), 0700)
-	if err != nil {
-		t.Fatal("Failed to create dir1")
+	if !emptyDirectory {
+		err = ioutil.WriteFile(path.Join(testFolder, "file1"), []byte(quickBrownFox), 0700)
+		if err != nil {
+			t.Fatal("Failed to create file1")
+		}
+		err = os.Mkdir(path.Join(testFolder, "dir1"), 0700)
+		if err != nil {
+			t.Fatal("Failed to create dir1")
+		}
 	}
 }
 
@@ -190,4 +200,61 @@ func TestWriteStream(t *testing.T) {
 	if string(file1bytes) != strings.ReplaceAll(quickBrownFox, "quick", "QUICK") {
 		t.Fatal("file1 was not written to correctly")
 	}
+}
+
+func simpleResolveLnkFile(pathToCheck string) string {
+	if runtime.GOOS != "windows" || !strings.HasSuffix(pathToCheck, ".lnk") {
+		return pathToCheck
+	}
+	// TODO: Make this better
+	data, _ := ioutil.ReadFile(pathToCheck)
+	s := string(data)
+	start := strings.Index(s, "Data2\x00") + 6
+	end := strings.Index(s[start:], "\x00") + start
+	pathToCheck = s[start:end]
+
+	newPath, _ := filepath.Abs(testFolder)
+	newPath, _ = filepath.Rel(newPath, pathToCheck)
+	return path.Join(testFolder, newPath)
+}
+
+func compareHashes(t *testing.T, hashSource string) {
+	hashlist := make([]string, 0)
+	err := filepath.Walk(testFolder, func(path string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			realPath := simpleResolveLnkFile(path)
+			data, err := ioutil.ReadFile(realPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			hash := md5.Sum(data)
+			path = strings.ReplaceAll(path, testFolder, ".")
+			path = strings.ReplaceAll(path, "\\", "/")
+			path = strings.ReplaceAll(path, ".lnk", "")
+			hashlist = append(hashlist, hex.EncodeToString(hash[:])+"  "+path)
+		}
+		return nil
+	})
+	sort.Strings(hashlist)
+	hashesActual := strings.Join(hashlist, "\n") + "\n"
+	hashesExpectationBytes, _ := ioutil.ReadFile(hashSource)
+	hashesExpectation := string(hashesExpectationBytes)
+	if hashesActual != hashesExpectation {
+		t.Fatalf("Hash mismatch: Expected\n%s  but was\n%s", hashesExpectation, hashesActual)
+	}
+
+	if err != nil {
+		t.Fatal("Directory listing failed")
+	}
+}
+
+func TestStream(t *testing.T) {
+	prepareTestFolder2(t, true)
+	data, _ := ioutil.ReadFile("data/stream01.bin")
+	runProgram(t, data)
+	compareHashes(t, "data/stream01_files.txt")
+
+	data, _ = ioutil.ReadFile("data/stream02.bin")
+	runProgram(t, data)
+	compareHashes(t, "data/stream02_files.txt")
 }

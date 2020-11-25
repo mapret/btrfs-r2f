@@ -1,0 +1,5 @@
+03c729679ca3252a4735c4148b7c11e3  ./dir1/qbf.txt
+03c729679ca3252a4735c4148b7c11e3  ./qbf_symlink.txt
+0d7006cd055e94cf614587e1d2ae0c8e  ./dir1/qbf2.txt
+a46ba306ba2f5687aea5c7a6c02110d2  ./letters.txt
+c5721e84f80f551cec9f252473d47ced  ./letters_hardlink.txt
