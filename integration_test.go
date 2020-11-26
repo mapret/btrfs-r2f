@@ -262,3 +262,10 @@ func TestStream(t *testing.T) {
 	runProgram(t, data)
 	compareHashes(t, "data/stream02_files.txt")
 }
+
+func TestStreamWithCommandline(t *testing.T) {
+	prepareTestFolder2(t, true)
+	args := [...]string{programName, "-o", testFolder, "-i", "data/stream01.bin"}
+	Main(args[:])
+	compareHashes(t, "data/stream01_files.txt")
+}
