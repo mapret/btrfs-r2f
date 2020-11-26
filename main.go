@@ -8,14 +8,20 @@ import (
 )
 
 const magicString = "btrfs-stream\000"
+const programName = "btrfs-r2f"
 
 func main() {
-	config := readConfig()
+	Main(os.Args)
+}
 
-	if isStdinPipeConnected() {
+// Main entry point (Necessary for integration tests)
+func Main(args []string) {
+	config := readConfig(args)
+
+	if len(config.InputPath) == 0 {
 		ExecuteProgram(os.Stdin, config)
 	} else {
-		fd, err := os.OpenFile(os.Args[1], os.O_RDONLY, 0)
+		fd, err := os.OpenFile(config.InputPath, os.O_RDONLY, 0)
 		if err != nil {
 			panic(err)
 		}
