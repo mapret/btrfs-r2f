@@ -8,7 +8,7 @@ An application to receive a btrfs command stream to a local folder on any file s
 >&nbsp;&nbsp;&nbsp;&nbsp;— [btrfs.wiki.kernel.org](https://btrfs.wiki.kernel.org)
 
 Btrfs can make [atomic snapshots](https://man7.org/linux/man-pages/man8/btrfs-subvolume.8.html) and store them as [files](https://man7.org/linux/man-pages/man8/btrfs-send.8.html).
-The additionally functionality of storing only the differences to a previous snapshot makes this mechanism suitable for [incremental backups](https://en.wikipedia.org/wiki/Incremental_backup).
+The additional functionality of storing only the differences to a previous snapshot makes this mechanism suitable for [incremental backups](https://en.wikipedia.org/wiki/Incremental_backup).
 Restoring a backup from these files requires a btrfs partition, where all increments [are unpacked](https://man7.org/linux/man-pages/man8/btrfs-receive.8.html) in the same order as they were created.
 
 Requiring a btrfs partition to restore a backup is no major problem if the backup is used for restoring the filesystem on a server, which would need the partition anyways.
@@ -48,7 +48,7 @@ Usage: btrfs-r2f [options...]
 A suite of simple tests can be run with the built-in command ```go test```.
 
 Additionally, exploratory tests are run from time to time, where a series of incremental backups is unpacked and then compared to the original snapshot.
-This is done by calculating the hash of each file in a btrfs snapthos with the command ```find . -type f -print0 | sort -z | xargs -r0 sha256sum```,
+This is done by calculating the hash of each file in a btrfs snapshot with the command ```find . -type f -print0 | sort -z | xargs -r0 sha256sum```,
 then running the same command on the restored directory and comparing the outputs.
 As of writing this, the exploratory test succeeded for a partition containing about 22000 files and directories with a total size of about 22GiB, contained in 87 backup files (full initial backup plus daily incremental backup).
 
@@ -56,7 +56,7 @@ As of writing this, the exploratory test succeeded for a partition containing ab
 
 On Windows, symlinks cannot be created without administrator privileges by default.
 Therefore, symlinks are represented as shortcuts.
-This has the disadvantage that restored backups are not exactly equal to their original source, because shortcuts always end in .lnk, which is not shown in Windows Explorer, but becomes relevant when reading file names through a program.
+This has the disadvantage that restored backups are not exactly equal to their original source, because shortcuts always end in .lnk, which is not shown in Windows Explorer, but becomes relevant when reading file names programmatically.
 
 ## License
 
