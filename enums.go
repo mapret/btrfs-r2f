@@ -1,4 +1,4 @@
-package main
+package btrfsr2f
 
 type sendCommand uint16
 

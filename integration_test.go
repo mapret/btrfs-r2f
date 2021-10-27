@@ -1,4 +1,4 @@
-package main
+package btrfsr2f
 
 import (
 	"bytes"
@@ -87,7 +87,11 @@ func simpleResolveLnkFile(pathToCheck string) string {
 	// TODO: Make this better
 	data, _ := ioutil.ReadFile(pathToCheck)
 	s := string(data)
-	start := strings.Index(s, "Data2\x00") + 6
+	start := strings.Index(s, "Data2\x00")
+	if start == -1 {
+		start = strings.Index(s, "Data3\x00")
+	}
+	start += 6
 	if start == 5 { // TODO: This reeeeeeeaaally needs to change
 		start = strings.Index(s, "\x00\x43\x3a") + 1
 	}
