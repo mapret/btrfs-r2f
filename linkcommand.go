@@ -1,4 +1,4 @@
-package btrfsr2f
+package main
 
 import (
 	"fmt"
