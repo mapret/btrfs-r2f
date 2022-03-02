@@ -50,7 +50,7 @@ A suite of simple tests can be run with the built-in command ```go test```.
 Additionally, exploratory tests are run from time to time, where a series of incremental backups is unpacked and then compared to the original snapshot.
 This is done by calculating the hash of each file in a btrfs snapshot with the command ```find . -type f -print0 | sort -z | xargs -r0 sha256sum```,
 then running the same command on the restored directory and comparing the outputs.
-As of writing this, the exploratory test succeeded for a partition containing about 22000 files and directories with a total size of about 22GiB, contained in 87 backup files (full initial backup plus daily incremental backup).
+As of writing this, the exploratory test succeeded for a partition containing about 27000 files and directories with a total size of about 23GiB, contained in 477 backup files (full initial backup plus daily incremental backup).
 
 ## Remarks
 
